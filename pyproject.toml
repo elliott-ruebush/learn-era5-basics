@@ -5,10 +5,20 @@ description = "ERA5 data exploration with cdsapi and xarray"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "cartopy>=0.25.0",
     "cdsapi>=0.7.7",
     "dask>=2025.12.0",
     "h5netcdf>=1.7.3",
+    "marimo>=0.18.4",
+    "matplotlib>=3.10.8",
+    "pyproj==3.6.1",
     "xarray>=2025.12.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0.0",
+    "numpy>=2.0.0",
 ]
 
 [project.scripts]
