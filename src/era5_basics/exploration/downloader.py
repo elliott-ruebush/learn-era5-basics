@@ -6,30 +6,28 @@ import xarray as xr
 from era5_basics.config.settings import LOCATIONS
 
 def get_cds_client() -> cdsapi.Client:
-    """Initializes and returns the CDS API client."""
     return cdsapi.Client()
 
 def download_era5_subset(client: cdsapi.Client, area: list[float], output_path: str) -> None:
-    """Downloads a minimal ERA5 dataset for a specific area and time range."""
-    print(f"Requesting data for {output_path}...")
     
     # Check if we need to download or if we can process an existing zip/file
-    if not os.path.exists(output_path) or zipfile.is_zipfile(output_path):
-        if not os.path.exists(output_path):
-            client.retrieve(
-                'reanalysis-era5-single-levels',
-                {
-                    'product_type': 'reanalysis',
-                    'format': 'netcdf',
-                    'variable': ['2m_temperature', 'total_precipitation'],
-                    'year': '2023',
-                    'month': '01',
-                    'day': [f"{i:02d}" for i in range(1, 32)],
-                    'time': [f"{i:02d}:00" for i in range(24)],
-                    'area': area,
-                },
-                output_path
-            )
+    if not os.path.exists(output_path):
+        client.retrieve(
+            'reanalysis-era5-single-levels',
+            {
+                'product_type': 'reanalysis',
+                'format': 'netcdf',
+                'variable': ['2m_temperature', 'total_precipitation'],
+                'year': '2023',
+                'month': '01',
+                'day': [f"{i:02d}" for i in range(1, 32)],
+                'time': [f"{i:02d}:00" for i in range(24)],
+                'area': area,
+            },
+            output_path
+        )
+    else:
+        print(f"  > {output_path} already exists. Skipping download.")
 
     # Post-processing: Check if the file is a ZIP archive (CDS often returns ZIP for mixed variables)
     if zipfile.is_zipfile(output_path):
@@ -56,9 +54,10 @@ def download_era5_subset(client: cdsapi.Client, area: list[float], output_path: 
                 ds.close()
         except Exception as e:
             print(f"  > Error processing zip file: {e}")
+    else:
+        print(f"  > {output_path} already exists. Skipping unzipping.")
 
 def run_download() -> None:
-    """Orchestrates the download of ERA5 data."""
     client = get_cds_client()
     for name, config in LOCATIONS.items():
         try:

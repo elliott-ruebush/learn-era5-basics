@@ -29,13 +29,6 @@ url: https://cds.climate.copernicus.eu/api/v2
 key: <UID>:<API_KEY>
 ```
 
-**Example:**
-
-```text
-url: https://cds.climate.copernicus.eu/api/v2
-key: 12345:98765432-xxxx-yyyy-zzzz-1234567890ab
-```
-
 > [!NOTE]
 > The `.cdsapirc` file should be in your home folder, NOT the project folder.
 
