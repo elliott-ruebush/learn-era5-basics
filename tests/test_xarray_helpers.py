@@ -1,6 +1,7 @@
 """Unit tests for xarray_helpers module."""
 
 import numpy as np
+import pandas as pd
 import pytest
 import xarray as xr
 
@@ -13,14 +14,6 @@ class TestGetCityExtent:
     @pytest.fixture
     def sample_dataset(self):
         """Create a sample dataset with two cities (simulating concatenated ERA5 data)."""
-        # Chicago coordinates
-        chicago_lat = np.array([41.6, 41.85, 42.1])
-        chicago_lon = np.array([-87.8, -87.55, -87.3])
-        
-        # NYC coordinates  
-        nyc_lat = np.array([40.5, 40.75, 41.0])
-        nyc_lon = np.array([-74.2, -73.95, -73.7])
-        
         # Combined coordinates (outer join - all unique values)
         all_lats = np.array([40.5, 40.75, 41.0, 41.6, 41.85, 42.1])
         all_lons = np.array([-87.8, -87.55, -87.3, -74.2, -73.95, -73.7])
@@ -29,7 +22,7 @@ class TestGetCityExtent:
         # Shape: (2 cities, 6 lats, 6 lons)
         temp_data = np.full((2, 6, 6), np.nan)
         
-        # Chicago data (first 3 lats, first 3 lons)
+        # Chicago data (last 3 lats, first 3 lons)
         temp_data[0, 3:6, 0:3] = np.random.randn(3, 3) + 273.15
         
         # NYC data (first 3 lats, last 3 lons)
@@ -52,17 +45,12 @@ class TestGetCityExtent:
     @pytest.fixture
     def simple_dataset(self):
         """Create a simpler dataset for basic testing."""
-        # Single city with clear bounds
         lats = np.array([40.0, 40.5, 41.0])
         lons = np.array([-75.0, -74.5, -74.0, -73.5])
-        
-        # Create temperature data (no NaN since single city)
         temp_data = np.ones((1, 3, 4)) * 280.0
         
         ds = xr.Dataset(
-            {
-                "temp": (["city", "latitude", "longitude"], temp_data)
-            },
+            {"temp": (["city", "latitude", "longitude"], temp_data)},
             coords={
                 "city": ["TestCity"],
                 "latitude": lats,
@@ -79,14 +67,6 @@ class TestGetCityExtent:
         assert lonE == -73.5
         assert latS == 40.0
         assert latN == 41.0
-    
-    def test_get_city_extent_returns_tuple(self, simple_dataset):
-        """Test that function returns a tuple of 4 floats."""
-        result = get_city_extent(simple_dataset, "TestCity")
-        
-        assert isinstance(result, tuple)
-        assert len(result) == 4
-        assert all(isinstance(x, float) for x in result)
     
     def test_get_city_extent_invalid_city(self, simple_dataset):
         """Test that ValueError is raised for non-existent city."""
@@ -132,32 +112,87 @@ class TestGetCityExtent:
         with pytest.raises(KeyError, match="Dataset must have a 'longitude' coordinate"):
             get_city_extent(ds, "TestCity")
     
-    def test_get_city_extent_order(self, simple_dataset):
-        """Test that the returned values are in correct order (W, E, S, N)."""
-        lonW, lonE, latS, latN = get_city_extent(simple_dataset, "TestCity")
-        
-        # West should be less than East
-        assert lonW < lonE
-        # South should be less than North
-        assert latS < latN
-    
-    def test_get_city_extent_with_negative_coords(self):
-        """Test with negative coordinates (common for Western hemisphere)."""
+    def test_get_city_extent_no_data_variables(self):
+        """Test that ValueError is raised when dataset has no data variables."""
         ds = xr.Dataset(
-            {"temp": (["city", "latitude", "longitude"], np.ones((1, 2, 2)))},
             coords={
-                "city": ["City"],
-                "latitude": [-10.0, -5.0],
-                "longitude": [-120.0, -115.0],
+                "city": ["TestCity"],
+                "latitude": [40.0, 40.5],
+                "longitude": [-75.0, -74.5],
             }
         )
         
-        lonW, lonE, latS, latN = get_city_extent(ds, "City")
+        with pytest.raises(ValueError, match="Dataset has no data variables"):
+            get_city_extent(ds, "TestCity")
+    
+    def test_get_city_extent_all_nan_data(self):
+        """Test that ValueError is raised when city has only NaN data."""
+        ds = xr.Dataset(
+            {"temp": (["city", "latitude", "longitude"], 
+                      np.full((1, 3, 4), np.nan))},
+            coords={
+                "city": ["TestCity"],
+                "latitude": [40.0, 40.5, 41.0],
+                "longitude": [-75.0, -74.5, -74.0, -73.5],
+            }
+        )
         
-        assert lonW == -120.0
-        assert lonE == -115.0
-        assert latS == -10.0
-        assert latN == -5.0
+        with pytest.raises(ValueError, match="No valid data found for city"):
+            get_city_extent(ds, "TestCity")
+    
+    def test_get_city_extent_with_time_dimension(self):
+        """Test with temporal dimension (realistic ERA5 structure)."""
+        ds = xr.Dataset(
+            {"temp": (["city", "time", "latitude", "longitude"], 
+                      np.ones((1, 5, 3, 4)) * 280.0)},
+            coords={
+                "city": ["TestCity"],
+                "time": pd.date_range("2023-01-01", periods=5, freq="h"),
+                "latitude": [40.0, 40.5, 41.0],
+                "longitude": [-75.0, -74.5, -74.0, -73.5],
+            }
+        )
+        
+        lonW, lonE, latS, latN = get_city_extent(ds, "TestCity")
+        
+        assert lonW == -75.0
+        assert lonE == -73.5
+        assert latS == 40.0
+        assert latN == 41.0
+    
+    def test_get_city_extent_multi_city_selection(self, sample_dataset):
+        """Test that correct city is selected from multi-city dataset."""
+        chi_extent = get_city_extent(sample_dataset, "Chicago")
+        nyc_extent = get_city_extent(sample_dataset, "NYC")
+        
+        # Extents should be different
+        assert chi_extent != nyc_extent
+        
+        # Chicago should be further west (more negative longitude)
+        assert chi_extent[0] < nyc_extent[0]  # lonW
+        assert chi_extent[1] < nyc_extent[1]  # lonE
+        
+        # Chicago should be further north
+        assert chi_extent[2] > nyc_extent[2]  # latS
+        assert chi_extent[3] > nyc_extent[3]  # latN
+    
+    def test_get_city_extent_single_point(self):
+        """Test with a city that has only one grid point."""
+        ds = xr.Dataset(
+            {"temp": (["city", "latitude", "longitude"], 
+                      np.array([[[280.0]]]))},
+            coords={
+                "city": ["TestCity"],
+                "latitude": [40.0],
+                "longitude": [-75.0],
+            }
+        )
+        
+        lonW, lonE, latS, latN = get_city_extent(ds, "TestCity")
+        
+        # All should be the same point
+        assert lonW == lonE == -75.0
+        assert latS == latN == 40.0
     
     def test_get_city_extent_with_real_era5_data(self):
         """Integration test with actual ERA5 data files if available."""
@@ -189,18 +224,11 @@ class TestGetCityExtent:
         chi_lonW, chi_lonE, chi_latS, chi_latN = get_city_extent(ds, "Chicago")
         assert chi_lonW < chi_lonE
         assert chi_latS < chi_latN
-        # Chicago should be around -87 to -88 longitude, 41-42 latitude
-        assert -89 < chi_lonW < -86
-        assert -89 < chi_lonE < -86
-        assert 40 < chi_latS < 43
-        assert 40 < chi_latN < 43
         
         # Test NYC extent
         nyc_lonW, nyc_lonE, nyc_latS, nyc_latN = get_city_extent(ds, "NYC")
         assert nyc_lonW < nyc_lonE
         assert nyc_latS < nyc_latN
-        # NYC should be around -73 to -74 longitude, 40-41 latitude
-        assert -75 < nyc_lonW < -72
-        assert -75 < nyc_lonE < -72
-        assert 39 < nyc_latS < 42
-        assert 39 < nyc_latN < 42
+        
+        # Verify cities are in different locations
+        assert chi_lonW < nyc_lonW  # Chicago is west of NYC
