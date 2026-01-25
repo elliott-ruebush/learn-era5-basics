@@ -7,7 +7,7 @@ app = marimo.App(width="medium")
 @app.cell(hide_code=True)
 def _(mo):
     mo.md("""
-    # ERA5 Data Analysis & Dask Integration
+    # Geospatial Learning: ERA5 Data Analysis & Dask Integration
 
     In this tutorial, we will:
     1.  Load **real ERA5 data** (NetCDF files) for Chicago and NYC.
@@ -302,7 +302,7 @@ def _(ds, plt):
     import cartopy.crs as ccrs
     import cartopy.feature as cfeature
 
-    from era5_basics.utils import get_city_extent
+    from geospatial_learning.utils import get_city_extent
 
     _cities = ds.city.values
 

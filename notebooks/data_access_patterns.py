@@ -208,7 +208,7 @@ def _(mo):
 @app.cell
 def _(mo):
     mo.md("""
-    *Reference implementation for this pattern is in `src/era5_basics/scripts/downloader.py`*
+    *Reference implementation for this pattern is in `src/geospatial_learning/scripts/downloader.py`*
     """)
     return
 

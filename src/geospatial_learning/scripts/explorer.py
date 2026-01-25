@@ -1,6 +1,6 @@
 import xarray as xr
 
-from era5_basics.config.settings import LOCATIONS
+from geospatial_learning.config.settings import LOCATIONS
 
 
 def explore_netcdf(file_path: str) -> None:

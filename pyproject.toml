@@ -1,5 +1,5 @@
 [project]
-name = "era5-basics"
+name = "geospatial-learning"
 version = "0.1.0"
 description = "ERA5 data exploration with cdsapi and xarray"
 readme = "README.md"
@@ -27,9 +27,9 @@ dev = [
 ]
 
 [project.scripts]
-download-era5 = "era5_basics.scripts.downloader:run_download"
-explore-era5 = "era5_basics.scripts.explorer:run_exploration"
-update-docs = "era5_basics.scripts.update_docs_index:main"
+download-era5 = "geospatial_learning.scripts.downloader:run_download"
+explore-era5 = "geospatial_learning.scripts.explorer:run_exploration"
+update-docs = "geospatial_learning.scripts.update_docs_index:main"
 
 [tool.uv]
 package = true

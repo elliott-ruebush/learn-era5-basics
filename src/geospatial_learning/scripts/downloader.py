@@ -5,7 +5,7 @@ from pathlib import Path
 import cdsapi
 import xarray as xr
 
-from era5_basics.config.settings import LOCATIONS
+from geospatial_learning.config.settings import LOCATIONS
 
 
 def get_cds_client() -> cdsapi.Client:

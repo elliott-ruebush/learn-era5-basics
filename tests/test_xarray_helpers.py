@@ -5,7 +5,7 @@ import pandas as pd
 import pytest
 import xarray as xr
 
-from era5_basics.utils import get_city_extent
+from geospatial_learning.utils import get_city_extent
 
 
 class TestGetCityExtent:
