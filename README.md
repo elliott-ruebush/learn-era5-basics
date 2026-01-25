@@ -8,7 +8,7 @@ Finally, it's also a test of using Google Antigravity as an IDE.
 
 ## Analysis Results
 
-* [Hot and Cold: City Climate Comparison](notebooks/hot_and_cold.html)
+* [Hot and Cold: City Climate Comparison](notebooks/hot_and_cold.ipynb)
 
 ## Documentation
 
