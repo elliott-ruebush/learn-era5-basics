@@ -12,9 +12,9 @@ Finally, it's also a test of using Google Antigravity as an IDE.
 
 * **Guides**
     * [CDS API Setup Guide](docs/guides/cds-setup.md)
-* **Reference**
-    * [ARCO and Modern Geospatial](docs/reference/arco-overview.md)
-    * [Geospatial Data Levels](docs/reference/geospatial-data-levels.md)
+* **My Writeups**
+    * [ARCO and Modern Geospatial](docs/my-writeups/arco-overview.md)
+    * [Geospatial Data Levels](docs/my-writeups/geospatial-data-levels.md)
 
 <!-- END_TOC -->
 
