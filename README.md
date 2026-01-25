@@ -6,11 +6,11 @@ This repo is a living document for me to learn about working with geospatial dat
 
 Finally, it's also a test of using Google Antigravity as an IDE.
 
-## Analysis Results
+## Notebook Results
 
 * [Hot and Cold: City Climate Comparison](notebooks/hot_and_cold.ipynb)
 
-## Documentation
+## Markdown Writeups
 
 <!-- START_TOC -->
 
