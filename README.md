@@ -2,7 +2,9 @@
 
 ## Overview
 
-This repo is a living document for me to learn about working with ERA5 (ECMWF's climate data reanalysis). It's also a hodgepodge of experimenting with structuring python projects under uv, using marimo for notebooks, and learning about useful libraries for geospatial data analysis like xarray, dask, and cartopy. Finally, it's also a first attempt at using Google Antigravity as an IDE.
+This repo is a living document for me to learn about working with geospatial data in python. It started as a simple attempt to read some ERA5 (ECMWF's climate data reanalysis) data, but has additionally involved into hodgepodge of experimenting with structuring python projects under uv, using marimo for notebooks, learning about useful libraries for geospatial data analysis like xarray, dask, and cartopy, and generally exploring geospatial.
+
+Finally, it's also a test of using Google Antigravity as an IDE.
 
 ## Documentation
 
