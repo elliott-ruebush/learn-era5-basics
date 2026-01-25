@@ -33,6 +33,7 @@ def _():
     import arraylake as al
     import marimo as mo
     import matplotlib.pyplot as plt
+    import pint_xarray  # noqa: F401
     import xarray as xr
 
     from geospatial_learning.utils.climate_indices import (

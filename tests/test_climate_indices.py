@@ -84,3 +84,41 @@ def test_calculate_cold_snaps():
 
     snaps_w1 = calculate_cold_snaps(da, threshold_f=5, window_days=1)
     assert snaps_w1.sum() == 3
+
+
+@pytest.fixture
+def sample_data():
+    import numpy as np
+
+    times = pd.date_range("2023-01-01", periods=5, freq="h")
+    temp = xr.DataArray(
+        np.array([25.0, 26.0, 27.0, 28.0, 29.0]), dims="time", coords={"time": times}, attrs={"units": "degC"}
+    )
+    dew = xr.DataArray(
+        np.array([15.0, 16.0, 17.0, 18.0, 19.0]), dims="time", coords={"time": times}, attrs={"units": "degC"}
+    )
+    u_wind = xr.DataArray(
+        np.array([2.0, 3.0, 4.0, 5.0, 6.0]), dims="time", coords={"time": times}, attrs={"units": "m/s"}
+    )
+    v_wind = xr.DataArray(
+        np.array([1.0, 1.0, 1.0, 1.0, 1.0]), dims="time", coords={"time": times}, attrs={"units": "m/s"}
+    )
+    return temp, dew, u_wind, v_wind
+
+
+def test_calculate_heat_index_no_explicit_pint_import(sample_data):
+    """Verify heat index calculation works without explicit pint-xarray import in the test."""
+    temp, dew, _, _ = sample_data
+    # This should succeed because climate_indices.py now imports pint_xarray
+    hi = calculate_heat_index(temp, dew)
+    assert isinstance(hi, xr.DataArray)
+    assert hi.attrs.get("units") in ["degF", "°F"]
+
+
+def test_calculate_wind_chill_no_explicit_pint_import(sample_data):
+    """Verify wind chill calculation works without explicit pint-xarray import in the test."""
+    temp, _, u, v = sample_data
+    # This should succeed because climate_indices.py now imports pint_xarray
+    wc = calculate_wind_chill(temp, u, v)
+    assert isinstance(wc, xr.DataArray)
+    assert wc.attrs.get("units") in ["degF", "°F"]

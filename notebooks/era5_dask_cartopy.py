@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.18.4"
+__generated_with = "0.19.6"
 app = marimo.App(width="medium")
 
 
@@ -10,10 +10,10 @@ def _(mo):
     # Geospatial Learning: ERA5 Data Analysis & Dask Integration
 
     In this tutorial, we will:
-    1.  Load **real ERA5 data** (NetCDF files) for Chicago and NYC.
-    2.  Use **Dask** to handle "large" data (lazily loaded).
+    1.  Load ERA5 data (NetCDF files) for Chicago and NYC.
+    2.  Use *Dask* to handle "large" data (lazily loaded).
     3.  Combine multiple datasets into one using `xr.concat`.
-    4.  Calculate statistics and create comparative plots.
+    4.  Calculate values and create comparative plots.
     """)
     return
 
@@ -53,7 +53,6 @@ def _(Path, xr):
     def load_location_data(filename, city_name):
         ds = xr.open_dataset(
             base_dir / filename,
-            engine="h5netcdf",
             chunks={"valid_time": 24},  # Chunk by day (24 hours)
         )
         # Assign a new coordinate "city" to help us combine them later

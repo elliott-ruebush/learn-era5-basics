@@ -12,7 +12,6 @@ repos:
     rev: v0.14.14
     hooks:
       - id: ruff-check
-        args: [--fix]
       - id: ruff-format
 
   - repo: local

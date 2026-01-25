@@ -9,6 +9,7 @@ This module provides wrappers around MetPy and xclim to calculate:
 """
 
 import metpy.calc as mpcalc
+import pint_xarray  # Required for .pint accessor  # noqa: F401
 import xarray as xr
 from xclim.indices import cold_spell_total_length, hot_spell_total_length
 
