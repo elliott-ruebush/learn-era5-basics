@@ -11,3 +11,7 @@ wheels/
 
 # NetCDF files``
 *.nc
+
+.mypy_cache
+.pytest_cache
+.ruff_cache
