@@ -12,4 +12,4 @@ trigger: always_on
 * Minimize comments, only use in code where one cannot derive the reason for an implementation decision or where it is necessary (e.g. public facing API in open source library). Do not restate the code in comments.
 
 # System Info
-This project is on a 2020 Apple Macbook Air with an M1 chip running MacOSX Monterey
+This project is on a 2020 Apple Macbook Air with an M1 chip running MacOSX Sonoma
