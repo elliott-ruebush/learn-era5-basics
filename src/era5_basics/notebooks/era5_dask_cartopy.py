@@ -299,7 +299,7 @@ def _(mo):
 def _(ds, plt):
     import cartopy.crs as ccrs
     import cartopy.feature as cfeature
-    from notebook_utils.xarray_helpers import get_city_extent
+    from era5_basics.utils import get_city_extent
 
     _cities = ds.city.values
 

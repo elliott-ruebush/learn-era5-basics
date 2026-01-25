@@ -8,22 +8,26 @@ dependencies = [
     "cartopy>=0.25.0",
     "cdsapi>=0.7.7",
     "dask>=2025.12.0",
+    "gcsfs>=2023.6.0",
     "h5netcdf>=1.7.3",
     "marimo>=0.18.4",
     "matplotlib>=3.10.8",
     "pyproj==3.6.1",
     "xarray>=2025.12.0",
+    "zarr>=2.16.0",
 ]
 
 [dependency-groups]
 dev = [
     "pytest>=8.0.0",
     "numpy>=2.0.0",
+    "pre-commit>=4.0.0",
 ]
 
 [project.scripts]
-download-era5 = "era5_basics.exploration.downloader:run_download"
-explore-era5 = "era5_basics.exploration.explorer:run_exploration"
+download-era5 = "era5_basics.scripts.downloader:run_download"
+explore-era5 = "era5_basics.scripts.explorer:run_exploration"
+update-docs = "era5_basics.scripts.update_docs_index:main"
 
 [tool.uv]
 package = true
