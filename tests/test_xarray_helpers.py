@@ -207,9 +207,7 @@ class TestGetCityExtent:
 
         # Load and concatenate data (mimicking the notebook)
         def load_location_data(filename, city_name):
-            return xr.open_dataset(base_dir / filename, engine="h5netcdf", chunks={"valid_time": 24}).assign_coords(
-                city=city_name
-            )
+            return xr.open_dataset(base_dir / filename, chunks={"valid_time": 24}).assign_coords(city=city_name)
 
         ds_chi = load_location_data("era5_chicago_jan2023.nc", "Chicago")
         ds_nyc = load_location_data("era5_nyc_jan2023.nc", "NYC")
@@ -227,3 +225,60 @@ class TestGetCityExtent:
 
         # Verify cities are in different locations
         assert chi_lon_w < nyc_lon_w  # Chicago is west of NYC
+
+
+def test_calculate_daily_max():
+    """Test calculating daily maximum."""
+    from geospatial_learning.utils.xarray_helpers import calculate_daily_max
+
+    # 2 days of hourly data
+    times = pd.date_range("2020-01-01", periods=48, freq="h")
+    # Day 1: 0-23 -> Max 23
+    # Day 2: 24-47 -> Max 47
+    values = np.arange(48)
+
+    da = xr.DataArray(values, coords={"time": times}, dims="time", attrs={"units": "degF"})
+
+    daily_max = calculate_daily_max(da)
+    assert len(daily_max) == 2
+    assert daily_max.values[0] == 23
+    assert daily_max.values[1] == 47
+    assert daily_max.attrs["units"] == "degF"
+
+
+def test_calculate_daily_mean():
+    """Test calculating daily mean."""
+    from geospatial_learning.utils.xarray_helpers import calculate_daily_mean
+
+    # 2 days of hourly data
+    times = pd.date_range("2020-01-01", periods=48, freq="h")
+    # Day 1: 0-23 -> Mean 11.5
+    # Day 2: 24-47 -> Mean 35.5
+    values = np.arange(48)
+
+    da = xr.DataArray(values, coords={"time": times}, dims="time", attrs={"units": "degF"})
+
+    daily_mean = calculate_daily_mean(da)
+    assert len(daily_mean) == 2
+    assert daily_mean.values[0] == 11.5
+    assert daily_mean.values[1] == 35.5
+    assert daily_mean.attrs["units"] == "degF"
+
+
+def test_calculate_daily_min():
+    """Test calculating daily minimum."""
+    from geospatial_learning.utils.xarray_helpers import calculate_daily_min
+
+    # 2 days of hourly data
+    times = pd.date_range("2020-01-01", periods=48, freq="h")
+    # Day 1: 0-23 -> Min 0
+    # Day 2: 24-47 -> Min 24
+    values = np.arange(48)
+
+    da = xr.DataArray(values, coords={"time": times}, dims="time", attrs={"units": "degF"})
+
+    daily_min = calculate_daily_min(da)
+    assert len(daily_min) == 2
+    assert daily_min.values[0] == 0
+    assert daily_min.values[1] == 24
+    assert daily_min.attrs["units"] == "degF"

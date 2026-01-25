@@ -51,10 +51,10 @@ def download_era5_subset(client: cdsapi.Client, area: list[float], output_path: 
 
                 # Open and merge all files
                 # using combine='by_coords' to merge different variables/streams
-                ds = xr.open_mfdataset(nc_files, engine="h5netcdf", combine="by_coords", compat="identical")
+                ds = xr.open_mfdataset(nc_files, combine="by_coords", compat="identical")
 
                 # Save as a single NetCDF file, overwriting the zip
-                ds.to_netcdf(output_path, engine="h5netcdf")
+                ds.to_netcdf(output_path)
                 print(f"  > Successfully merged {len(nc_files)} files into {output_path}")
                 ds.close()
         except Exception as e:

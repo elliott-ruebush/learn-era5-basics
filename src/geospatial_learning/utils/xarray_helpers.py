@@ -67,3 +67,27 @@ def get_city_extent(dataset: xr.Dataset, city: str) -> tuple[float, float, float
     lon_e = float(lon_with_data.max().values)
 
     return lon_w, lon_e, lat_s, lat_n
+
+
+def calculate_daily_max(hourly_data: xr.DataArray) -> xr.DataArray:
+    """Resample hourly data to daily maximum, preserving units attribute."""
+    daily = hourly_data.resample(time="1D").max()
+    if "units" in hourly_data.attrs and "units" not in daily.attrs:
+        daily.attrs["units"] = hourly_data.attrs["units"]
+    return daily
+
+
+def calculate_daily_mean(hourly_data: xr.DataArray) -> xr.DataArray:
+    """Resample hourly data to daily mean, preserving units attribute."""
+    daily = hourly_data.resample(time="1D").mean()
+    if "units" in hourly_data.attrs and "units" not in daily.attrs:
+        daily.attrs["units"] = hourly_data.attrs["units"]
+    return daily
+
+
+def calculate_daily_min(hourly_data: xr.DataArray) -> xr.DataArray:
+    """Resample hourly data to daily minimum, preserving units attribute."""
+    daily = hourly_data.resample(time="1D").min()
+    if "units" in hourly_data.attrs and "units" not in daily.attrs:
+        daily.attrs["units"] = hourly_data.attrs["units"]
+    return daily

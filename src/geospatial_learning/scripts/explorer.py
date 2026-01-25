@@ -7,7 +7,7 @@ def explore_netcdf(file_path: str) -> None:
     """Opens a NetCDF file and prints basic statistics and sample data."""
     print(f"\n--- Exploring {file_path} ---")
     try:
-        with xr.open_dataset(file_path, engine="h5netcdf") as ds:
+        with xr.open_dataset(file_path) as ds:
             print("\nDataset Info:")
             print(ds)
 
