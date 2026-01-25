@@ -1,13 +1,13 @@
 import marimo
 
-__generated_with = "0.19.2"
+__generated_with = "0.19.6"
 app = marimo.App(width="medium")
 
 
 @app.cell
 def _(mo):
     mo.md(r"""
-    Before jumping into reading any actual data, let's take a brief moment for an overview of some of the cool tooling out there for efficiently teasing out answers to big geospatial data problems without needing an [AWS Snowmobile](https://aws.amazon.com/blogs/aws/aws-snowmobile-move-exabytes-of-data-to-the-cloud-in-weeks/)* truck's trove of hard-drives to store the data on
+    ∑Before jumping into reading any actual data, let's take a brief moment for an overview of some of the cool tooling out there for efficiently teasing out answers to big geospatial data problems without needing an [AWS Snowmobile](https://aws.amazon.com/blogs/aws/aws-snowmobile-move-exabytes-of-data-to-the-cloud-in-weeks/)* truck's trove of hard-drives to store the data on
 
     ## What is ARCO ([Article by Lobelia Earth](https://blog.lobelia.earth/arco-the-smartest-way-to-access-big-geospatial-data-eaf689eff3c9))
     One of the acronyms that's gaining a lot of hype in the geospatial community these days is ARCO, which stands for Analysis-Ready, Cloud-Optimized.
@@ -54,20 +54,17 @@ def _(mo):
 
 @app.cell
 def _():
-    import xarray as xr
-    import fsspec
-    import zarr
-    import matplotlib.pyplot as plt
-    import cartopy.crs as ccrs
-    import marimo as mo
-    import cdsapi
-    from pathlib import Path
-    import io
-    import zipfile
-    import tempfile
     import os
+    import tempfile
+    import zipfile
+    from pathlib import Path
 
-    # Configuration 
+    import cdsapi
+    import marimo as mo
+    import matplotlib.pyplot as plt
+    import xarray as xr
+
+    # Configuration
     CHI_LAT, CHI_LON = 41.88, -87.63
     NYC_LAT, NYC_LON = 40.75, -74
     return (
@@ -108,12 +105,12 @@ def _(xr):
     # Single Level Forecast
     # This dataset contains single-level forecast fields on ERA5's native reduced Gaussian grid.
     ds = xr.open_zarr(
-        'gs://gcp-public-data-arco-era5/co/single-level-forecast.zarr-v2/', 
+        "gs://gcp-public-data-arco-era5/co/single-level-forecast.zarr-v2/",
         chunks=None,
-        storage_options=dict(token='anon'),
-        decode_timedelta=False
+        storage_options={"token": "anon"},
+        decode_timedelta=False,
     )
-    single_level_forecasts = ds.sel(time=slice(ds.attrs['valid_time_start'], ds.attrs['valid_time_stop']))
+    single_level_forecasts = ds.sel(time=slice(ds.attrs["valid_time_start"], ds.attrs["valid_time_stop"]))
     return (single_level_forecasts,)
 
 
@@ -170,7 +167,7 @@ def _(
             "location": {"latitude": lat, "longitude": lon},
             "variable": ["2m_temperature"],
             "date": f"{start_year}-01-01/{end_year}-12-31",
-            "format": "netcdf" 
+            "format": "netcdf",
         }
 
         # This triggers the remote fetch
@@ -180,17 +177,17 @@ def _(
         # Check if the result is a ZIP archive
         if zipfile.is_zipfile(output_path):
             with tempfile.TemporaryDirectory() as temp_dir:
-                with zipfile.ZipFile(output_path, 'r') as zip_ref:
+                with zipfile.ZipFile(output_path, "r") as zip_ref:
                     zip_ref.extractall(temp_dir)
 
                 # Find NetCDF files
-                nc_files = [os.path.join(temp_dir, f) for f in os.listdir(temp_dir) if f.endswith('.nc')]
+                nc_files = [os.path.join(temp_dir, f) for f in os.listdir(temp_dir) if f.endswith(".nc")]
                 if not nc_files:
                     raise FileNotFoundError(f"No NetCDF files found in downloaded zip: {output_path}")
 
                 # Merge if multiple, otherwise open single
                 if len(nc_files) > 1:
-                    ds = xr.open_mfdataset(nc_files, combine='by_coords')
+                    ds = xr.open_mfdataset(nc_files, combine="by_coords")
                 else:
                     ds = xr.open_dataset(nc_files[0])
 
@@ -208,8 +205,8 @@ def _(
 
 
 @app.cell
-def _(chi_ds, nyc_ds, xr):
-    def add_t2m_c_from_t2m_k(ds: xr.Dataset):
+def _(chi_ds, nyc_ds):
+    def add_t2m_c_from_t2m_k(ds):
         ds["t2m_c"] = ds.t2m - 273.15
         ds.t2m_c.attrs = ds.t2m.attrs
         ds.t2m_c.attrs["units"] = "degC"
@@ -224,7 +221,7 @@ def _(chi_ds, nyc_ds, xr):
 def _(chi_ds, plt):
     # Plotting with xarray
     plt.figure(figsize=(10, 5))
-    chi_ds['t2m_c'].plot()
+    chi_ds["t2m_c"].plot()
     plt.title("40-Year History: Chicago (CDS Timeseries)")
     plt.show()
     return
@@ -234,7 +231,7 @@ def _(chi_ds, plt):
 def _(nyc_ds, plt):
     # Plotting with xarray
     plt.figure(figsize=(10, 5))
-    nyc_ds['t2m_c'].plot()
+    nyc_ds["t2m_c"].plot()
     plt.title("40-Year History: NYC (CDS Timeseries)")
     plt.show()
     return

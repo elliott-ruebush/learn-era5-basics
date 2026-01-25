@@ -7,10 +7,11 @@ app = marimo.App(width="medium")
 @app.cell
 def _():
     import marimo as mo
-    import xarray as xr
+    import matplotlib.pyplot as plt
     import numpy as np
     import pandas as pd
-    import matplotlib.pyplot as plt
+    import xarray as xr
+
     return mo, np, pd, plt, xr
 
 
@@ -65,24 +66,22 @@ def _(np, pd, xr):
     # Create DataArray
     temperature = xr.DataArray(
         data,
-        coords={
-            "time": times,
-            "lat": lats,
-            "lon": lons
-        },
+        coords={"time": times, "lat": lats, "lon": lons},
         dims=("time", "lat", "lon"),
         name="temperature",
-        attrs={"units": "degC"}  # Metadata is first-class citizen!
+        attrs={"units": "degC"},  # Metadata is first-class citizen!
     )
     return (temperature,)
 
 
 @app.cell
 def _(mo, temperature):
-    mo.vstack([
-        mo.md("Inspect the object below. Note you can click the disk icon to verify values and metadata."),
-        temperature
-    ])
+    mo.vstack(
+        [
+            mo.md("Inspect the object below. Note you can click the disk icon to verify values and metadata."),
+            temperature,
+        ]
+    )
     return
 
 
@@ -107,14 +106,11 @@ def _(np, temperature, xr):
         precip_data,
         dims=("time", "lat", "lon"),
         name="precipitation",
-        attrs={"units": "mm"}
+        attrs={"units": "mm"},
     )
 
     # Combine into a Dataset
-    ds = xr.Dataset({
-        "temperature": temperature,
-        "precipitation": precipitation
-    })
+    ds = xr.Dataset({"temperature": temperature, "precipitation": precipitation})
 
     # You can also add attributes to the whole dataset
     ds.attrs["description"] = "Synthetic weather data"
@@ -186,11 +182,7 @@ def _(ds, mo):
 
 @app.cell
 def _(ds, mo):
-    date_slider = mo.ui.slider(
-        0, 
-        ds.sizes["time"] - 1, 
-        label="Select Time Step (isel index)"
-    )
+    date_slider = mo.ui.slider(0, ds.sizes["time"] - 1, label="Select Time Step (isel index)")
     return (date_slider,)
 
 
@@ -199,11 +191,15 @@ def _(date_slider, ds, mo):
     # Interactive slice
     selected_slice = ds.isel(time=date_slider.value)
 
-    mo.vstack([
-        date_slider,
-        mo.md(f"**Showing data for time index: {date_slider.value}** ({ds.time[date_slider.value].dt.strftime('%Y-%m-%d').item()})"),
-        selected_slice
-    ])
+    mo.vstack(
+        [
+            date_slider,
+            mo.md(
+                f"**Showing data for time index: {date_slider.value}** ({ds.time[date_slider.value].dt.strftime('%Y-%m-%d').item()})"
+            ),
+            selected_slice,
+        ]
+    )
     return
 
 
@@ -228,7 +224,7 @@ def _(ds):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(f"""
+    mo.md("""
     **Broadcasting**:
     If we subtract the mean (2D: lat, lon) from the original (3D: time, lat, lon), Xarray handles the alignment automatically.
     """)
@@ -294,7 +290,7 @@ def _(ds, np, xr):
         np.random.rand(365, 2, 2) * 10,
         coords=ds.coords,
         name="wind_speed",
-        attrs={"units": "m/s"}
+        attrs={"units": "m/s"},
     )
 
     # Merge into the existing dataset

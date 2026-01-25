@@ -20,11 +20,12 @@ def _(mo):
 
 @app.cell
 def _():
-    import marimo as mo
-    import xarray as xr
-    import matplotlib.pyplot as plt
-    import pandas as pd
     from pathlib import Path
+
+    import marimo as mo
+    import matplotlib.pyplot as plt
+    import xarray as xr
+
     return Path, mo, plt, xr
 
 
@@ -53,11 +54,10 @@ def _(Path, xr):
         ds = xr.open_dataset(
             base_dir / filename,
             engine="h5netcdf",
-            chunks={"valid_time": 24}  # Chunk by day (24 hours)
+            chunks={"valid_time": 24},  # Chunk by day (24 hours)
         )
         # Assign a new coordinate "city" to help us combine them later
-        ds = ds.assign_coords(city=city_name)
-        return ds
+        return ds.assign_coords(city=city_name)
 
     ds_chi = load_location_data("era5_chicago_jan2023.nc", "Chicago")
     ds_nyc = load_location_data("era5_nyc_jan2023.nc", "NYC")
@@ -66,10 +66,12 @@ def _(Path, xr):
 
 @app.cell
 def _(ds_chi, mo):
-    mo.vstack([
-        mo.md("Inspect the Dask array structure. Notice `Values` says 'dask.array' instead of raw numbers."),
-        ds_chi.t2m
-    ])
+    mo.vstack(
+        [
+            mo.md("Inspect the Dask array structure. Notice `Values` says 'dask.array' instead of raw numbers."),
+            ds_chi.t2m,
+        ]
+    )
     return
 
 
@@ -176,7 +178,7 @@ def _(plt, spatial_mean):
     daily_cycle = spatial_mean.groupby("valid_time.hour").mean()
 
     fig2, ax2 = plt.subplots(figsize=(8, 5))
-    daily_cycle.t2m_c.plot(ax=ax2, hue="city", marker='o')
+    daily_cycle.t2m_c.plot(ax=ax2, hue="city", marker="o")
 
     ax2.set_title("Average Diurnal Cycle (Jan 2023)")
     ax2.set_xticks(range(0, 24, 3))
@@ -260,7 +262,7 @@ def _(ds, plt, time_mean):
     _cities = ds.city.values
     fig5, _axes = plt.subplots(1, len(_cities), figsize=(12, 5))
 
-    for _ax, _city in zip(_axes, _cities):
+    for _ax, _city in zip(_axes, _cities, strict=False):
         # Select data for the specific city
         # dropna removes the nan-filled coordinates from the other city
         _city_data = time_mean.sel(city=_city).dropna(dim="latitude", how="all").dropna(dim="longitude", how="all")
@@ -299,26 +301,23 @@ def _(mo):
 def _(ds, plt):
     import cartopy.crs as ccrs
     import cartopy.feature as cfeature
+
     from era5_basics.utils import get_city_extent
 
     _cities = ds.city.values
 
     # LAYER 1: The Base Map
     # We create a plot just to show the geography of our region
-    fig_base, axes_base = plt.subplots(
-        1, len(_cities), 
-        figsize=(12, 5),
-        subplot_kw={'projection': ccrs.PlateCarree()}
-    )
+    fig_base, axes_base = plt.subplots(1, len(_cities), figsize=(12, 5), subplot_kw={"projection": ccrs.PlateCarree()})
 
-    for _ax, _city in zip(axes_base, _cities):
+    for _ax, _city in zip(axes_base, _cities, strict=False):
         # Add Features (The "Geography")
-        _ax.add_feature(cfeature.LAND, facecolor='#e0e0e0') # Gray land
-        _ax.add_feature(cfeature.OCEAN, facecolor='#cceeff') # Blue ocean
-        _ax.add_feature(cfeature.LAKES, facecolor='#cceeff')
-        _ax.coastlines(resolution='10m', linewidth=1)
-        _ax.add_feature(cfeature.BORDERS, linestyle=':')
-        _ax.add_feature(cfeature.STATES, linestyle=':')
+        _ax.add_feature(cfeature.LAND, facecolor="#e0e0e0")  # Gray land
+        _ax.add_feature(cfeature.OCEAN, facecolor="#cceeff")  # Blue ocean
+        _ax.add_feature(cfeature.LAKES, facecolor="#cceeff")
+        _ax.coastlines(resolution="10m", linewidth=1)
+        _ax.add_feature(cfeature.BORDERS, linestyle=":")
+        _ax.add_feature(cfeature.STATES, linestyle=":")
 
         # Limit map area to the relevant lat/lon from our data to zoom in on the area of interest
         if _city == "Chicago":
@@ -340,29 +339,25 @@ def _(ccrs, cfeature, ds, plt, time_mean):
     _cities = ds.city.values
 
     # LAYER 2: Data Overlay
-    fig6, axes = plt.subplots(
-        1, len(_cities), 
-        figsize=(12, 5),
-        subplot_kw={'projection': ccrs.PlateCarree()}
-    )
+    fig6, axes = plt.subplots(1, len(_cities), figsize=(12, 5), subplot_kw={"projection": ccrs.PlateCarree()})
 
-    for _ax, _city in zip(axes, _cities):
+    for _ax, _city in zip(axes, _cities, strict=False):
         # Select data
         _city_data = time_mean.sel(city=_city).dropna(dim="latitude", how="all").dropna(dim="longitude", how="all")
 
         # 1. Draw minimal context
-        _ax.coastlines(linewidth=1.2, color='black') # Thicker coastlines for visibility
-        _ax.add_feature(cfeature.BORDERS, linestyle=':', alpha=0.5)
-        _ax.add_feature(cfeature.STATES, linestyle=':', alpha=0.5)
+        _ax.coastlines(linewidth=1.2, color="black")  # Thicker coastlines for visibility
+        _ax.add_feature(cfeature.BORDERS, linestyle=":", alpha=0.5)
+        _ax.add_feature(cfeature.STATES, linestyle=":", alpha=0.5)
 
         # 2. Paint Data
         # transform=ccrs.PlateCarree() is CRITICAL.
         _city_data.t2m_c.plot(
-            ax=_ax, 
-            cmap="RdBu_r", 
+            ax=_ax,
+            cmap="RdBu_r",
             transform=ccrs.PlateCarree(),
             cbar_kwargs={"shrink": 0.7, "label": "Temp (C)"},
-            alpha=0.3 # Slight transparency to see major geographic features if needed
+            alpha=0.3,  # Slight transparency to see major geographic features if needed
         )
 
         _ax.set_title(f"{_city} Average Temp (Overlay)")

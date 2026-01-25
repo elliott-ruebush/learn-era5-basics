@@ -1,4 +1,4 @@
-# Geospatial Data Levels 
+# Geospatial Data Levels
 [NASA EOS Article](https://www.earthdata.nasa.gov/learn/earth-observation-data-basics/data-processing-levels)
 
 What kinds of geospatial data are out there? How do we get from a satellite orbiting the earth and broadcasting some sensor outputs to a prediction for the temperature in Chicago tomorrow?
