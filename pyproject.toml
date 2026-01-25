@@ -3,17 +3,24 @@ name = "geospatial-learning"
 version = "0.1.0"
 description = "ERA5 data exploration with cdsapi and xarray"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 dependencies = [
+    "arraylake>=0.28.1",
     "cartopy>=0.25.0",
     "cdsapi>=0.7.7",
     "dask>=2025.12.0",
+    "flox>=0.10.8",
     "gcsfs>=2023.6.0",
     "h5netcdf>=1.7.3",
+    "icechunk>=1.1.16",
     "marimo>=0.18.4",
     "matplotlib>=3.10.8",
-    "pyproj==3.6.1",
+    "metpy>=1.7.1",
+    "pint>=0.25.2",
+    "pint-xarray>=0.6.0",
+    "pyproj>=3.7.2",
     "xarray>=2025.12.0",
+    "xclim>=0.60.0",
     "zarr>=2.16.0",
 ]
 
@@ -36,7 +43,7 @@ package = true
 
 [tool.ruff]
 line-length = 120
-target-version = "py312"
+target-version = "py313"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "UP", "B", "A", "C4", "RET", "ARG", "PTH", "RUF"]
@@ -47,4 +54,4 @@ ignore = ["E501"]
 "notebooks/*.py" = ["N803", "B018", "ARG001", "RUF059", "N806"]
 
 [tool.ty.environment]
-python-version = "3.12"
+python-version = "3.13"
