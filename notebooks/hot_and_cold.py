@@ -254,6 +254,7 @@ def _(mo):
     From the above, we can see that Chicago is the undisputed cold snap champion over NYC, with more cold snap days *almost* (1987 ruins it...) every single year in the ERA5 history.
 
     We can also see some diabolically cold years in the Chicago history. 40 days of <= 5 degrees F **AVERAGE** temp is a bone-chilling winter.
+    Interestingly, that [winter of 1985](https://en.wikipedia.org/wiki/1985_North_American_cold_wave) also corresponds to the coldest day on record in Chicago, where temps hit -27 degrees F real and -60 degrees F wind chill.
     """)
     return
 
