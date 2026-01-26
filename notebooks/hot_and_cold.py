@@ -45,7 +45,6 @@ def _():
     from geospatial_learning.utils.xarray_helpers import (
         calculate_daily_max,
         calculate_daily_mean,
-        calculate_daily_min,
     )
 
     return (
@@ -53,7 +52,6 @@ def _():
         calculate_cold_snaps,
         calculate_daily_max,
         calculate_daily_mean,
-        calculate_daily_min,
         calculate_heat_index,
         calculate_heat_waves,
         calculate_wind_chill,
