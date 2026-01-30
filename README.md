@@ -24,10 +24,10 @@ Finally, it's also a test of using Google Antigravity as an IDE.
 
 ## Setup
 
-Install dependencies and setup pre-commit:
+Install dependencies and setup prek:
 ```bash
 uv sync --dev
-uv run pre-commit install
+uv run prek install -f
 ```
 
 Run marimo notebooks:
@@ -48,13 +48,13 @@ uv run pytest tests/
 
 ## Development
 
-This project uses **pre-commit** with with a very astral-y code quality setup of ruff and ty. See pre-commit-config.yaml for details.
+This project uses **prek** for pre-commit checks with with a very astral-y code quality setup of ruff and ty. See `.pre-commit-config.yaml` for details.
 
 ### Manual Checks
 You can run the full suite of checks manually at any time:
 ```bash
-# Run all pre-commit hooks
-uv run pre-commit run --all-files
+# Run all prek hooks
+uv run prek run --all-files
 
 # Or run individual tools
 uv run ruff check .
